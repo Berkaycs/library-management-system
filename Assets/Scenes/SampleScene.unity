@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 1909227}
   - component: {fileID: 1909226}
   m_Layer: 5
-  m_Name: PublisherInput
+  m_Name: CopyNumberInput
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2853,7 +2853,7 @@ GameObject:
   - component: {fileID: 523494845}
   - component: {fileID: 523494844}
   m_Layer: 5
-  m_Name: PublisherText
+  m_Name: CopyNumberText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6439,11 +6439,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4304810c0a3c63748be346507549b80f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isbnInput: {fileID: 0}
-  titleInput: {fileID: 0}
-  authorInput: {fileID: 0}
-  copyNumberInput: {fileID: 0}
-  bookSO: {fileID: 11400000, guid: 49d7993b61d9dbe4799a8621648955b2, type: 2}
+  isbnInput: {fileID: 128894926}
+  titleInput: {fileID: 559781808}
+  authorInput: {fileID: 867063033}
+  copyNumberInput: {fileID: 1909226}
+  bookManager: {fileID: 1319197457}
+  books:
+  - {fileID: 100000, guid: 888ce82c0af2ab0499d39c93fb0f4ce4, type: 3}
+  - {fileID: 100000, guid: f99df1970d4b71441a320ce6acc52709, type: 3}
+  - {fileID: 100000, guid: cba00f75539bc564fabb9136fccfac6c, type: 3}
+  - {fileID: 100000, guid: f9ec2f5b43ac0204199acdb66395048b, type: 3}
 --- !u!114 &1000279119
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8522,6 +8527,65 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 300}
   m_Pivot: {x: 0, y: 1}
+--- !u!1 &1319197456
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1319197458}
+  - component: {fileID: 1319197457}
+  m_Layer: 0
+  m_Name: BookManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1319197457
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319197456}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bda177ba58357f40bf28d4e8f96f36b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  books:
+  - {fileID: 11400000, guid: 38ab44c50eabc6e48a9848296dc5e5dc, type: 2}
+  - {fileID: 11400000, guid: 1f2ecbc2de8359543862266ac10852fe, type: 2}
+  - {fileID: 11400000, guid: 1037cbd58fc72e7488666675c2ec5aca, type: 2}
+  - {fileID: 11400000, guid: fc44d786a9259a34cbe2ed3ede0d5881, type: 2}
+  - {fileID: 11400000, guid: 992f3c44f1adb28438986b8fc7f53425, type: 2}
+  - {fileID: 11400000, guid: 53f63a1f444dd794d9b3592175013aef, type: 2}
+  - {fileID: 11400000, guid: 3b862461139166944accf05f5f7bb54c, type: 2}
+  - {fileID: 11400000, guid: 44fc8d57672efac41b1b4812333de936, type: 2}
+  - {fileID: 11400000, guid: 9c6979d4ebef0604f9cf11c8f7770e06, type: 2}
+  - {fileID: 11400000, guid: 20f4d024189adda4bab7d611c238cfd5, type: 2}
+  - {fileID: 11400000, guid: 33e3e1c71a7e40640807f923c05955b0, type: 2}
+  - {fileID: 11400000, guid: 560536fa5b9ca7045af254f3c531c46a, type: 2}
+  - {fileID: 11400000, guid: e81b2349bddf994488d6be4d448ad802, type: 2}
+  - {fileID: 11400000, guid: 0a67957aca9f79b4cbf13b59332fc7d1, type: 2}
+--- !u!4 &1319197458
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1319197456}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 8
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1326934662
 GameObject:
   m_ObjectHideFlags: 0
@@ -9595,10 +9659,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
   m_PhysicalUnit: 3
