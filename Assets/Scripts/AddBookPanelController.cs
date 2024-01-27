@@ -15,21 +15,14 @@ public class AddBookPanelController : MonoBehaviour
     [SerializeField] private List<GameObject> books;
 
     private float x = 2.2f;
-    private float y = 2.2f;
+    private float y = 1.8f;
     private float z = 0.8f;
 
-    private void Awake()
+    private void Start()
     {
-        foreach (BookInfo bookSO in bookManager.books)
-        {
-            for (int i = 0; i < bookSO.copyNumber - bookSO.borrowedNumber; i++)
-            {
-                Vector3 pos = new Vector3(x, y, z);
-                Quaternion rot = Quaternion.Euler(0f, 270f, 0f);
-                Instantiate(bookSO.bookPrefab, pos, rot);
-                BookPos();
-            }
-        }
+        x = bookManager.x;
+        y = bookManager.y;
+        z = bookManager.z;
     }
 
     public void OnAddButtonClick()
