@@ -11,4 +11,5 @@ public class BookInfo : ScriptableObject
     public string author;
     public int copyNumber;
     public int borrowedNumber;
+    public bool isBorrowed = false;
 }

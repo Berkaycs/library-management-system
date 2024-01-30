@@ -11,6 +11,7 @@ public class AddBookPanelController : MonoBehaviour
     [SerializeField] private TMP_InputField copyNumberInput;
 
     [SerializeField] private BookManager bookManager;
+    [SerializeField] private ListBookPanelController controller;
 
     [SerializeField] private List<GameObject> books;
 
@@ -55,12 +56,14 @@ public class AddBookPanelController : MonoBehaviour
                 BookPos();
             }
         }
-        // Optionally, close the UI panel or reset input fields
-        // panel.SetActive(false);
-        // isbnInput.text = "";
-        // titleInput.text = "";
-        // authorInput.text = ""
-        // copyNumberInput.text = ""
+
+        controller.popupList[6].SetActive(true);
+        StartCoroutine(controller.Timer());
+
+        isbnInput.text = "";
+        titleInput.text = "";
+        authorInput.text = "";
+        copyNumberInput.text = "";
     }
 
     private BookInfo FindExistingBook(string isbn)
@@ -122,7 +125,9 @@ public class AddBookPanelController : MonoBehaviour
 
         else
         {
-            Debug.Log("The bookshelf is full!");
+
+            controller.popupList[5].SetActive(true);
+            StartCoroutine(controller.Timer());
         }
     }
 }

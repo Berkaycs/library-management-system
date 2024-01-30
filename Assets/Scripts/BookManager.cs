@@ -1,11 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEditor.EditorTools;
 using UnityEngine;
 
 public class BookManager : MonoBehaviour
 {
     public List<BookInfo> books;
+    public List<BookInfo> borrowedBooks;
+
+    [SerializeField] private ListBookPanelController controller;
 
     public float x = 2.2f;
     public float y = 2.2f;
@@ -21,6 +25,11 @@ public class BookManager : MonoBehaviour
                 Quaternion rot = Quaternion.Euler(0f, 270f, 0f);
                 Instantiate(bookSO.bookPrefab, pos, rot);
                 BookPos();
+            }
+
+            if (bookSO.borrowedNumber > 0)
+            {
+                borrowedBooks.Add(bookSO);
             }
         }
     }
@@ -40,7 +49,9 @@ public class BookManager : MonoBehaviour
 
         else
         {
-            Debug.Log("The bookshelf is full!");
+            
+            controller.popupList[5].SetActive(true);
+            StartCoroutine(controller.Timer());  
         }
     }
 }
