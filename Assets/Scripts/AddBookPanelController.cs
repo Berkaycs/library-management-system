@@ -11,20 +11,10 @@ public class AddBookPanelController : MonoBehaviour
     [SerializeField] private TMP_InputField copyNumberInput;
 
     [SerializeField] private BookManager bookManager;
-    [SerializeField] private ListBookPanelController controller;
+
+    [SerializeField] private PopupList popupListHolder;
 
     [SerializeField] private List<GameObject> books;
-
-    private float x = 2.2f;
-    private float y = 1.8f;
-    private float z = 0.8f;
-
-    private void Start()
-    {
-        x = bookManager.x;
-        y = bookManager.y;
-        z = bookManager.z;
-    }
 
     public void OnAddButtonClick()
     {
@@ -33,32 +23,17 @@ public class AddBookPanelController : MonoBehaviour
         if (existingBook != null )
         {
             existingBook.copyNumber += int.Parse(copyNumberInput.text);
-
-            for (int i = 0; i < int.Parse(copyNumberInput.text); i++)
-            {
-                Vector3 pos = new Vector3(x, y, z);
-                Quaternion rot = Quaternion.Euler(0f, 270f, 0f);
-                Instantiate(existingBook.bookPrefab, pos, rot);
-                BookPos();
-            }
+            popupListHolder.popupList[6].SetActive(true);
+            StartCoroutine(popupListHolder.Timer());
         }
 
         else
         {
             BookInfo newBook = CreateBook();
             AddBookToBookSO(newBook);
-
-            for (int i = 0; i < newBook.copyNumber; i++)
-            {
-                Vector3 pos = new Vector3(x, y, z);
-                Quaternion rot = Quaternion.Euler(0f, 270f, 0f);
-                Instantiate(newBook.bookPrefab, pos, rot);
-                BookPos();
-            }
+            popupListHolder.popupList[6].SetActive(true);
+            StartCoroutine(popupListHolder.Timer());
         }
-
-        controller.popupList[6].SetActive(true);
-        StartCoroutine(controller.Timer());
 
         isbnInput.text = "";
         titleInput.text = "";
@@ -86,18 +61,11 @@ public class AddBookPanelController : MonoBehaviour
     {
         int bookIndex = Random.Range(0, books.Count);
         BookInfo book = ScriptableObject.CreateInstance<BookInfo>();
-        book.bookPrefab = books[bookIndex];
         book.isbn = isbnInput.text;
         book.title = titleInput.text;
         book.author = authorInput.text;
         book.copyNumber = int.Parse(copyNumberInput.text);
         book.borrowedNumber = 0;
-
-        string filePath = $"Assets/Resources/{book.title}.asset";
-
-        UnityEditor.AssetDatabase.CreateAsset(book, filePath);
-        UnityEditor.AssetDatabase.SaveAssets();
-        UnityEditor.AssetDatabase.Refresh();
 
         return book;
     }
@@ -107,27 +75,6 @@ public class AddBookPanelController : MonoBehaviour
         if (bookManager != null && bookManager.books != null)
         {
             bookManager.books.Add(book);
-        }
-    }
-
-    private void BookPos()
-    {
-        if (z <= 0.8f && z > -0.8f)
-        {
-            z -= 0.055f;
-        }
-
-        else if (y <= 2.2f && y >= 0.6f)
-        {
-            y -= 0.4f;
-            z = 0.8f;
-        }
-
-        else
-        {
-
-            controller.popupList[5].SetActive(true);
-            StartCoroutine(controller.Timer());
         }
     }
 }

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,8 +11,9 @@ public class ListBookPanelController : MonoBehaviour
     [SerializeField] private GameObject containerPrefab;
     [SerializeField] private GameObject parentObject;
     [SerializeField] private BookManager bookManager;
+    [SerializeField] private ExpiredBooksPanelController expiredController;
 
-    public GameObject[] popupList;
+    [SerializeField] private PopupList popupListHolder;
 
     private HashSet<string> borrowedISBNs = new HashSet<string>();
 
@@ -21,11 +23,11 @@ public class ListBookPanelController : MonoBehaviour
         {
             if (bookSO != null)
             {
-                GameObject existingBookEntry = FindBookEntryByISBN(bookSO.isbn);
+                GameObject existingBook = FindBookAwakeByISBN(bookSO.isbn);
 
-                if (existingBookEntry != null)
+                if (existingBook != null)
                 {
-                    TextMeshProUGUI copyText = existingBookEntry.transform.Find("CopyText").GetComponent<TextMeshProUGUI>();
+                    TextMeshProUGUI copyText = existingBook.transform.Find("CopyText").GetComponent<TextMeshProUGUI>();
                     int currentCopyNumber = bookSO.copyNumber;
                     copyText.text = (currentCopyNumber).ToString();
                 }
@@ -56,20 +58,6 @@ public class ListBookPanelController : MonoBehaviour
         }
     }
 
-    private GameObject FindBookEntryByISBN(string isbn)
-    {
-        foreach (Transform child in parentObject.transform)
-        {
-            TextMeshProUGUI isbnText = child.Find("ISBNText").GetComponent<TextMeshProUGUI>();
-            if (isbnText != null && isbnText.text == isbn)
-            {
-                return child.gameObject;
-            }
-        }
-
-        return null;
-    }
-
     public void BorrowBook(string isbn)
     {
         BookInfo selectedBook = FindExistingBook(isbn);
@@ -83,8 +71,10 @@ public class ListBookPanelController : MonoBehaviour
                 selectedBook.isBorrowed = true;
                 borrowedISBNs.Add(isbn);
 
-                popupList[0].SetActive(true);
-                StartCoroutine(Timer());            
+                popupListHolder.popupList[0].SetActive(true);
+                StartCoroutine(popupListHolder.Timer());
+
+                AddExpiredBookToList(isbn);
             }
 
            else if (bookManager.borrowedBooks.Contains(selectedBook) && !borrowedISBNs.Contains(isbn))
@@ -93,23 +83,26 @@ public class ListBookPanelController : MonoBehaviour
                 selectedBook.isBorrowed = true;
                 borrowedISBNs.Add(isbn);
 
-                popupList[0].SetActive(true);
-                StartCoroutine(Timer());
+                popupListHolder.popupList[0].SetActive(true);
+                StartCoroutine(popupListHolder.Timer());
+
+                AddExpiredBookToList(isbn);
             }
 
             else if (borrowedISBNs.Contains(isbn)) 
             {
                 selectedBook.isBorrowed = true;
 
-                popupList[2].SetActive(true);
-                StartCoroutine(Timer());
+                popupListHolder.popupList[2].SetActive(true);
+                StartCoroutine(popupListHolder.Timer());
+
             }
 
             else if (selectedBook.copyNumber == selectedBook.borrowedNumber)
             {
 
-                popupList[4].SetActive(true);
-                StartCoroutine(Timer());          
+                popupListHolder.popupList[4].SetActive(true);
+                StartCoroutine(popupListHolder.Timer());          
             }
         }
         UpdateUIText(selectedBook);
@@ -127,8 +120,10 @@ public class ListBookPanelController : MonoBehaviour
                 borrowedISBNs.Remove(isbn);
                 selectedBook.isBorrowed = false;
 
-                popupList[1].SetActive(true);
-                StartCoroutine(Timer());
+                RemoveExpiredBookFromList(isbn);
+
+                popupListHolder.popupList[1].SetActive(true);
+                StartCoroutine(popupListHolder.Timer());
 
                 if (selectedBook.copyNumber - selectedBook.borrowedNumber == 0 || selectedBook.borrowedNumber == 0)
                 {
@@ -139,8 +134,8 @@ public class ListBookPanelController : MonoBehaviour
             else
             {
 
-                popupList[3].SetActive(true);
-                StartCoroutine(Timer());        
+                popupListHolder.popupList[3].SetActive(true);
+                StartCoroutine(popupListHolder.Timer());        
             }
         }
 
@@ -159,7 +154,7 @@ public class ListBookPanelController : MonoBehaviour
 
     private void UpdateUIText(BookInfo book)
     {
-        GameObject selectedBook = FindBookEntryByISBN(book.isbn);
+        GameObject selectedBook = FindBookAwakeByISBN(book.isbn);
 
         if (selectedBook != null)
         {
@@ -169,6 +164,64 @@ public class ListBookPanelController : MonoBehaviour
                 borrowedText.text = book.borrowedNumber.ToString();
             }
         }
+    }
+
+    public void AddExpiredBookToList(string isbn)
+    {
+        StartCoroutine(DueDate(isbn));
+    }
+
+    public void RemoveExpiredBookFromList(string isbn)
+    {
+        GameObject containerInstance = FindBookContainerByISBN(isbn);
+        BookInfo selectedBook = FindExistingBook(isbn);
+
+        if (containerInstance != null)
+        {
+            Destroy(containerInstance.gameObject);
+            popupListHolder.popupList[1].SetActive(true);
+            StartCoroutine(popupListHolder.Timer());
+            expiredController.expiredBooks.Remove(selectedBook);
+        }
+    }
+
+    public IEnumerator DueDate(string isbn)
+    {
+        yield return new WaitForSecondsRealtime(30f);
+
+        GameObject containerInstance = Instantiate(expiredController.containerPrefab, expiredController.parentObject.transform);
+
+        BookInfo selectedBook = FindExistingBook(isbn);
+
+        TextMeshProUGUI isbnText = containerInstance.transform.Find("ISBNText").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI titleText = containerInstance.transform.Find("TitleText").GetComponent<TextMeshProUGUI>();
+        TextMeshProUGUI authorText = containerInstance.transform.Find("AuthorText").GetComponent<TextMeshProUGUI>();
+
+        isbnText.text = selectedBook.isbn;
+        authorText.text = selectedBook.author;
+        titleText.text = selectedBook.title;
+
+        TextMeshProUGUI expiredText = popupListHolder.popupList[7].GetComponentInChildren<TextMeshProUGUI>();
+        expiredText.text = $"{selectedBook.title} has expired. Please return the book.";
+        popupListHolder.popupList[7].SetActive(true);
+        StartCoroutine(popupListHolder.Timer());
+        expiredController.expiredBooks.Add(selectedBook);
+    }
+
+
+
+    private GameObject FindBookAwakeByISBN(string isbn)
+    {
+        foreach (Transform child in parentObject.transform)
+        {
+            TextMeshProUGUI isbnText = child.Find("ISBNText").GetComponent<TextMeshProUGUI>();
+            if (isbnText != null && isbnText.text == isbn)
+            {
+                return child.gameObject;
+            }
+        }
+
+        return null;
     }
 
     private BookInfo FindExistingBook(string isbn)
@@ -187,15 +240,17 @@ public class ListBookPanelController : MonoBehaviour
         return null;
     }
 
-    public IEnumerator Timer()
+    private GameObject FindBookContainerByISBN(string isbn)
     {
-        yield return new WaitForSeconds(3f);
-        popupList[0].SetActive(false);
-        popupList[2].SetActive(false);
-        popupList[4].SetActive(false);
-        popupList[1].SetActive(false);
-        popupList[3].SetActive(false);
-        popupList[5].SetActive(false);
-        popupList[6].SetActive(false);
+        foreach (Transform child in expiredController.parentObject.transform)
+        {
+            TextMeshProUGUI isbnText = child.Find("ISBNText").GetComponent<TextMeshProUGUI>();
+            if (isbnText != null && isbnText.text == isbn)
+            {
+                return child.gameObject;
+            }
+        }
+
+        return null;
     }
 }

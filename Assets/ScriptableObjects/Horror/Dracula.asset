@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 939ea4d238fa63042aac7d09a216c8fb, type: 3}
   m_Name: Dracula
   m_EditorClassIdentifier: 
-  bookPrefab: {fileID: 100000, guid: f99df1970d4b71441a320ce6acc52709, type: 3}
-  isbn: 978-1-59308-329-0
+  isbn: 981-536-387-913-0
   title: Dracula
   author: Bram Stoker
   copyNumber: 2
-  borrowedNumber: 0
+  borrowedNumber: 2
+  isBorrowed: 1
